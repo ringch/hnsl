@@ -1,0 +1,388 @@
+@layout("/common/_container.html"){
+<link rel="stylesheet" href="${ctxPath}/static/css/plugins/leaflet/Control.MiniMap.min.css">
+<link rel="stylesheet" href="${ctxPath}/static/css/map.css">
+<link rel="stylesheet" href="${ctxPath}/static/css/plugins/leaflet/leaflet.marker.highlight.css">
+<link rel="stylesheet" href="${ctxPath}/static/css/plugins/leaflet/leaflet-ruler.css">
+<div class="container-fluid" style="padding: 0 !important;height: calc(100% + 30px);margin: -15px;" id="container"
+     v-cloak>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <div id="map" style="height: 100%;"></div>
+    <#MapsToolCon></#MapsToolCon>
+    <div class="search mapWidget">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="请输入关键字">
+            <span class="input-group-btn">
+				<button type="button" class="btn btn-primary" v-on:click="submitSearch">搜索</button>
+			</span>
+        </div>
+        <div class="search-result" v-show="resultShow">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>结果展示</h5>
+                    <div class="ibox-tools">
+                        <a v-on:click="closeResult">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content icons-box" style="padding: 5px;">
+                    <ul class="search-result-group">
+                        <li class="active">全部（20）</li>
+                        <li>渠道（5）</li>
+                        <li>水闸（5）</li>
+                        <li>桥（5）</li>
+                        <li>其他（5）</li>
+                    </ul>
+                    <div class="search-result-list"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="layerGroup mapWidget ">
+
+        <ul class="layerGroup-content ">
+            <li class="layerItem" v-on:click="layerGroupTab('base',$event)">灌区渠系</li>
+            <li class="layerItem" v-on:click="layerGroupTab('build',$event)">灌区工程</li>
+        </ul>
+        <div class="layerGroup-panel fast animated" :class="{'slideInLeft':isExtend,'slideOutLeft':!isExtend}">
+            <div class="layerGroup-tab"></div>
+            <div class="layerGroup-list">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content icons-box" style="padding: 5px;">
+                        <div class="bs-glyphicons">
+                            <ul class="bs-glyphicons-list">
+                                <li v-for="(item,index) in layerList"
+                                    :class="{'active':item.isShow}"
+                                    v-on:click="layerClickHandler(item)">
+                                    <span class="filter iconfont icon-shaixuan" v-show="item.isShow"
+                                          v-on:click.stop="layerFilter(index)" title="图层筛选"></span>
+                                    <i class="iconfont" :class="item.icon"></i>
+                                    <span class="glyphicon-class">{{item.name}}</span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layer-filter-panel" v-show="filterShow">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 v-if="layerList.length!=0">{{layerList[filterLayerId].name}}</h5>
+                            <div class="ibox-tools">
+                                <a v-on:click="filterClose">
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <#NameCon id="condition" name="快速查询" placeholder="渠道编码/渠道名称" />
+                                </div>
+                                <div class="col-sm-12">
+                                    <#SelectCon id="canalType" name="渠道类型" >
+                                        <option value="0">全部</option>
+                                        <option value="1">主干渠</option>
+                                        <option value="2">干渠</option>
+                                        <option value="3">支渠</option>
+                                        <option value="4">斗渠</option>
+                                        <option value="5">农渠</option>
+                                        <option value="9">其他</option>
+                                    </#SelectCon>
+                                </div>
+                                <div class="col-sm-12">
+                                    <#button name="搜索" float="right" icon="fa-search" clickFun="CanalBase.search()"/>
+                                    <#button name="重置" btnCss="default" float="right" icon="fa-undo" clickFun="CanalBase.search()"/>
+                                </div>
+                            </div>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>数据</th>
+                                    <th>用户</th>
+                                    <th>值</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><span class="line" style="display: none;">5,3,2,-1,-3,-2,2,3,5,2</span>
+                                        <svg class="peity" height="16" width="32">
+                                            <polygon fill="#1ab394"
+                                                     points="0 9.375 0 0.5 3.5555555555555554 4.25 7.111111111111111 6.125 10.666666666666666 11.75 14.222222222222221 15.5 17.77777777777778 13.625 21.333333333333332 6.125 24.888888888888886 4.25 28.444444444444443 0.5 32 6.125 32 9.375"></polygon>
+                                            <polyline fill="transparent"
+                                                      points="0 0.5 3.5555555555555554 4.25 7.111111111111111 6.125 10.666666666666666 11.75 14.222222222222221 15.5 17.77777777777778 13.625 21.333333333333332 6.125 24.888888888888886 4.25 28.444444444444443 0.5 32 6.125"
+                                                      stroke="#169c81" stroke-width="1"
+                                                      stroke-linecap="square"></polyline>
+                                        </svg>
+                                    </td>
+                                    <td>张三</td>
+                                    <td class="text-navy"><i class="fa fa-level-up"></i> 40%</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><span class="line" style="display: none;">5,3,9,6,5,9,7,3,5,2</span>
+                                        <svg class="peity" height="16" width="32">
+                                            <polygon fill="#1ab394"
+                                                     points="0 15 0 7.166666666666666 3.5555555555555554 10.5 7.111111111111111 0.5 10.666666666666666 5.5 14.222222222222221 7.166666666666666 17.77777777777778 0.5 21.333333333333332 3.833333333333332 24.888888888888886 10.5 28.444444444444443 7.166666666666666 32 12.166666666666666 32 15"></polygon>
+                                            <polyline fill="transparent"
+                                                      points="0 7.166666666666666 3.5555555555555554 10.5 7.111111111111111 0.5 10.666666666666666 5.5 14.222222222222221 7.166666666666666 17.77777777777778 0.5 21.333333333333332 3.833333333333332 24.888888888888886 10.5 28.444444444444443 7.166666666666666 32 12.166666666666666"
+                                                      stroke="#169c81" stroke-width="1"
+                                                      stroke-linecap="square"></polyline>
+                                        </svg>
+                                    </td>
+                                    <td>李四</td>
+                                    <td class="text-warning"><i class="fa fa-level-down"></i> -20%</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><span class="line" style="display: none;">1,6,3,9,5,9,5,3,9,6,4</span>
+                                        <svg class="peity" height="16" width="32">
+                                            <polygon fill="#1ab394"
+                                                     points="0 15 0 13.833333333333334 3.2 5.5 6.4 10.5 9.600000000000001 0.5 12.8 7.166666666666666 16 0.5 19.200000000000003 7.166666666666666 22.400000000000002 10.5 25.6 0.5 28.8 5.5 32 8.833333333333332 32 15"></polygon>
+                                            <polyline fill="transparent"
+                                                      points="0 13.833333333333334 3.2 5.5 6.4 10.5 9.600000000000001 0.5 12.8 7.166666666666666 16 0.5 19.200000000000003 7.166666666666666 22.400000000000002 10.5 25.6 0.5 28.8 5.5 32 8.833333333333332"
+                                                      stroke="#169c81" stroke-width="1"
+                                                      stroke-linecap="square"></polyline>
+                                        </svg>
+                                    </td>
+                                    <td>王麻子</td>
+                                    <td class="text-navy"><i class="fa fa-level-up"></i> 26%</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 自定义js -->
+    <script src="${ctxPath}/static/js/common/mapConfig.js"></script>
+    <script src="${ctxPath}/static/js/content.js?v=1.0.0"></script>
+    <!-- jQuery UI -->
+    <script src="${ctxPath}/static/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+    <!--leaflet组件-->
+    <script src="${ctxPath}/static/js/plugins/leaflet/Control.MiniMap.min.js"></script>
+    <script src="${ctxPath}/static/js/plugins/leaflet/leaflet.marker.highlight.js"></script>
+    <script src="${ctxPath}/static/js/plugins/leaflet/leaflet-ruler.js"></script>
+    <script>
+        Vue.component('button-counter', {
+            template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+            data: function () {
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                incrementTotal: function () {
+                    this.counter += 1
+                   alert(1);
+                }
+            },
+        })
+
+        new Vue({
+            el: '#container',
+            data: {
+                isExtend: false,
+                resultShow: false,
+                toolShow: null,
+                filterShow: false,
+                baseMapGroup: {mapNow: 'color', list: mapConfig.Layers.baseMapLayers},
+                layerList: [],
+                filterLayerId: 0,
+                map: null,
+                baseMap: null,
+                rulerTool: {
+                    polyline: {
+                        ruler: null,
+                        isActive: false
+                    },
+                    polygon: {
+                        ruler: null,
+                        isActive: false
+                    }
+                }
+            },
+            methods: {
+                //左侧图层组切换
+                layerGroupTab: function (type, e) {
+                    var _this = this;
+                    if ($(e.currentTarget).hasClass('active')) {
+                        $(e.currentTarget).removeClass('active');
+                        _this.isExtend = false;
+                    } else {
+                        $(".layerGroup-content li").removeClass('active');
+                        $(e.currentTarget).addClass('active');
+                        _this.isExtend = true;
+                    }
+                    this.layerList = mapConfig.Layers[type];
+
+                },
+                //图层点击
+                layerClickHandler: function (item) {
+                    //判断图层是否未定义
+                    if (item.layer == null) {
+                        item.layer = L.esri.dynamicMapLayer({
+                            url: item.url
+                        }).bindPopup(function (err, featureCollection, response) {
+                            var html = `
+                                <div class='popupContainer'>
+                                    <div class='popupHeader'>
+                                        <ul class='nav nav-tabs'>
+                                            <li class='active'>
+                                                <a href='#TableContent' data-toggle='tab'>配套管线信息</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class='popupContent tab-content'>
+                                        <div class='popup-panel'>
+                                            <table>
+                                                <tr><th width="160">口门编号</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">口门名称</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">供水目标</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">岸别</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">渠道设计流量</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">渠道加大流量</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">口门流量</th><td>{source_name}</td></tr>
+                                                <tr><th width="160">分配水量</th><td>{source_name}</td></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            `
+                            return L.Util.template(html, featureCollection.features[0].properties);
+                        })
+                    }
+                    //判断图层是否添加到map
+                    if (item.isShow) {
+                        this.map.removeLayer(item.layer);
+                    } else {
+                        item.layer.addTo(this.map);
+                    }
+
+                    item.isShow = !item.isShow;
+
+                },
+                //搜索提交
+                submitSearch: function () {
+                    this.resultShow = true;
+                },
+                //关闭搜索结果
+                closeResult: function () {
+                    this.resultShow = false;
+                },
+                //工具条模块点击
+                toolClick: function (toolType) {
+                    if (this.toolShow == toolType) {
+                        this.toolShow = null
+                    } else {
+                        this.toolShow = toolType
+                    }
+                },
+                //底图选择
+                basemapSelect: function (item) {
+                    this.baseMapGroup.mapNow = item.layerId;
+                    this.map.removeLayer(this.baseMap);
+                    this.baseMap = L.esri.tiledMapLayer({
+                        url: item.url
+                    }).addTo(this.map);
+                },
+                //图层过滤
+                layerFilter: function (index) {
+                    this.filterShow = true;
+                    this.filterLayerId = index;
+                },
+                filterClose: function () {
+                    this.filterShow = false;
+                },
+                marker: function () {
+
+                },
+                polyline: function () {
+
+                    if (this.rulerTool.polygon.isActive) {
+                        this.rulerTool.polygon.isActive = false;
+                        this.rulerTool.polygon.ruler.closeMeasure();
+                    }
+
+                    if (this.rulerTool.polyline.isActive) {
+                        this.rulerTool.polyline.isActive = false;
+                        this.rulerTool.polyline.ruler.closeMeasure();
+                    } else {
+                        this.rulerTool.polyline.isActive = true;
+                        this.rulerTool.polyline.ruler = L.control.ruler().addTo(this.map);
+                        this.rulerTool.polyline.ruler._toggleMeasure();
+                    }
+                },
+                polygon: function () {
+                    if (this.rulerTool.polyline.isActive) {
+                        this.rulerTool.polyline.isActive = false;
+                        this.rulerTool.polyline.ruler.closeMeasure();
+                    }
+
+                    if (this.rulerTool.polygon.isActive) {
+                        this.rulerTool.polygon.isActive = false;
+                        this.rulerTool.polygon.ruler.closeMeasure();
+                    } else {
+                        this.rulerTool.polygon.isActive = true;
+                        this.rulerTool.polygon.ruler = L.control.ruler({
+                            type: 'area'
+                        }).addTo(this.map);
+                        this.rulerTool.polygon.ruler._toggleMeasure();
+                    }
+                },
+            },
+            mounted: function () {
+                var _this = this;
+                this.map = L.map("map", {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([34.168, 112.141], 10);
+
+                var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: null});
+
+                this.baseMap = L.esri.tiledMapLayer({
+                    url: "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer"
+                }).addTo(this.map);
+
+//                var layer = L.esri.dynamicMapLayer({
+//                    url: 'http://localhost:6080/arcgis/rest/services/luhunguanqu/water_resouce/MapServer'
+//                }).addTo(this.map);
+//                console.log(layer);
+
+                var marker1 = L.marker([34.168, 112.141]).on('click', function () {
+                    this.enablePermanentHighlight();
+                }).addTo(this.map);
+
+                //地图控件位置
+                L.control.zoom({
+                    position: "bottomright"
+                }).addTo(this.map);
+
+                var miniMap = new L.Control.MiniMap(osm2, {
+                    toggleDisplay: true,
+                    position: 'bottomleft'
+                }).addTo(this.map);
+
+                this.map.on('click', function () {
+                    if (_this.toolShow == 'basemap') _this.toolShow = null;
+                })
+            }
+        })
+    </script>
+</div>
+<template id="myComponent">
+    <div>This is a component!</div>
+</template>
+@}

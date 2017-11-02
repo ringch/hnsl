@@ -31,6 +31,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     animation-duration: 2s;
 }
 
+.animated.fast {
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+}
+
 @-webkit-keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         -webkit-transform: translateY(0);
@@ -2532,9 +2537,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 }
 
+@-webkit-keyframes slideInRightFilter {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(0px);
+        transform: translateX(0px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRightFilter {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(0px);
+        -ms-transform: translateX(0px);
+        transform: translateX(0px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
 .slideInRight {
     -webkit-animation-name: slideInRight;
     animation-name: slideInRight;
+}
+
+.slideInRightFilter {
+    -webkit-animation-name: slideInRightFilter;
+    animation-name: slideInRightFilter;
 }
 
 @-webkit-keyframes slideOutLeft {

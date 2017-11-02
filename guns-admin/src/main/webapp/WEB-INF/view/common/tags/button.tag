@@ -20,7 +20,12 @@
 @}else{
 @   btnType = btnCss;
 @}
-<button type="button" class="btn btn-${btnType} ${spaceCss}" onclick="${clickFun!}" id="${id!}">
+@if(isEmpty(float)){
+@   float = "left";
+@}else{
+@   float = float;
+@}
+<button type="button" class="btn btn-${btnType} ${spaceCss}" onclick="${clickFun!}" id="${id!}" style="float:${float} ">
     <i class="fa ${icon}"></i>&nbsp;${name}
 </button>
 

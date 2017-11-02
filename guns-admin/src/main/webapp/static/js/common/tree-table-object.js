@@ -8,7 +8,7 @@
         this.btInstance = null;					//jquery和bootstrapTreeTable绑定的对象
         this.bstableId = bstableId;
         this.url = Feng.ctxPath + url;
-        this.method = "post";
+        this.method = "get";
         this.columns = columns;
         this.data = {};// ajax的参数
         this.expandColumn = null;// 展开显示的列 
@@ -17,7 +17,7 @@
         this.parentCode = 'pcode';// 用于设置父子关系
         this.expandAll = false;// 是否默认全部展开
         this.toolbarId = bstableId + "Toolbar";
-        this.height = 665;						//默认表格高度665
+        this.height = 550;						//默认表格高度665
     };
 
     BSTreeTable.prototype = {

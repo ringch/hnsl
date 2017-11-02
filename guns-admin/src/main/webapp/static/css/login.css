@@ -7,12 +7,12 @@ body.signin {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    color: rgba(255,255,255,.95);
+    color: rgba(0, 0, 0, 0.95);
 }
 
 .signinpanel {
-    width: 750px;
-    margin: 10% auto 0 auto;
+    width: 950px;
+    margin: 15% auto 0 auto;
 }
 
 .signinpanel .logopanel {
