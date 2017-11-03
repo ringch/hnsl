@@ -5,9 +5,82 @@
 <link rel="stylesheet" href="${ctxPath}/static/css/plugins/leaflet/leaflet-ruler.css">
 <div class="container-fluid" style="padding: 0 !important;height: calc(100% + 30px);margin: -15px;" id="container"
      v-cloak>
-    <button-counter v-on:increment="incrementTotal"></button-counter>
     <div id="map" style="height: 100%;"></div>
-    <#MapsToolCon></#MapsToolCon>
+    <div class="tool-bar mapWidget">
+        <ul>
+            <li>
+            <span v-on:click="toolClick('basemap')" style="display: block">
+                <i class="iconfont icon-ditu"></i>
+                底图选择
+            </span>
+                <div class="tool-panel basemap" v-show="toolShow=='basemap'">
+                    <div class="bar-arrow measure-bar-arrow"></div>
+                    <div class="panel-content map-list">
+                        <div class="blockdiv" style="height: 138px">
+                            <div id="zhitudiv">
+                                <span class="basemap-group-title">平台地图</span>
+                                <a class="mapa"
+                                   :class="[item.layerId, {'mapactive': baseMapGroup.mapNow == item.layerId}]"
+                                   title="item.name" v-for="item in baseMapGroup.list"
+                                   v-on:click="basemapSelect(item)" href="javascript:void(0);">
+                                    <span class="maptitle" :class="{'active':baseMapGroup.mapNow == item.layerId}">{{item.name}}</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="blockdiv">
+                            <div id="thirddiv">
+                                <span class="basemap-group-title">第三方地图</span>
+                                <a class="mapa tianditu" dataid="17" title="天地图">
+                                    <span class="maptitle">天地图</span>
+                                </a>
+                                <a class="mapa tengxun" dataid="8" title="腾讯地图">
+                                    <span class="maptitle">腾讯地图</span>
+                                </a>
+                                <a class="mapa tengxunimg" dataid="12" title="腾讯影像图">
+                                    <span class="maptitle">腾讯影像图</span>
+                                </a>
+                                <a class="mapa gaode" dataid="7" title="高德地图">
+                                    <span class="maptitle">高德地图</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </li>
+            <li class="measure-bar">
+            <span v-on:click="toolClick('measure')" style="display: block"> <i
+                    class="iconfont icon-liangce"></i>量测工具</span>
+                <div class="tool-panel measure" v-show="toolShow=='measure'">
+                    <div class="bar-arrow measure-bar-arrow"></div>
+                    <div class="panel-content measure-bar-content">
+                        <a class="measure-bar-marker" name="marker" title="测量点"></a>
+                        <a class="measure-bar-polyline" :class="{'acitve':rulerTool.polyline.isActive}" name="polyline"
+                           title="测量线段" v-on:click="polyline"></a>
+                        <a class="measure-bar-polygon" :class="{'acitve':rulerTool.polygon.isActive}" name="polygon"
+                           title="测量多边形" v-on:click="polygon"></a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="draw-bar">
+                <span v-on:click="toolClick('draw')" style="display: block"><i
+                        class="iconfont icon-biaohui"></i>地图标绘</span>
+                <div class="tool-panel draw" v-show="toolShow=='draw'">
+                    <div class="bar-arrow measure-bar-arrow"></div>
+                    <div class="panel-content draw-bar-content">
+                        <a class="draw-bar-marker" name="marker" href="#" title="标绘点"></a>
+                        <a class="draw-bar-polyline" name="polyline" href="#" title="标绘线段"></a>
+                        <a class="draw-bar-polygon" name="polygon" href="#" title="标绘多边形"></a>
+                        <a class="draw-bar-rectangle" name="rectangle" href="#" title="标绘矩形"></a>
+                        <a class="draw-bar-circle" name="circle" href="#" title="标绘圆"></a>
+                        <a class="draw-bar-txt" name="textMarker" href="#" title="标绘文本"></a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
     <div class="search mapWidget">
         <div class="input-group">
             <input type="text" class="form-control" placeholder="请输入关键字">
@@ -100,58 +173,18 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>数据</th>
-                                    <th>用户</th>
-                                    <th>值</th>
+                                    <th>水源编号</th>
+                                    <th>水源名称</th>
+                                    <th>水源类型</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td><span class="line" style="display: none;">5,3,2,-1,-3,-2,2,3,5,2</span>
-                                        <svg class="peity" height="16" width="32">
-                                            <polygon fill="#1ab394"
-                                                     points="0 9.375 0 0.5 3.5555555555555554 4.25 7.111111111111111 6.125 10.666666666666666 11.75 14.222222222222221 15.5 17.77777777777778 13.625 21.333333333333332 6.125 24.888888888888886 4.25 28.444444444444443 0.5 32 6.125 32 9.375"></polygon>
-                                            <polyline fill="transparent"
-                                                      points="0 0.5 3.5555555555555554 4.25 7.111111111111111 6.125 10.666666666666666 11.75 14.222222222222221 15.5 17.77777777777778 13.625 21.333333333333332 6.125 24.888888888888886 4.25 28.444444444444443 0.5 32 6.125"
-                                                      stroke="#169c81" stroke-width="1"
-                                                      stroke-linecap="square"></polyline>
-                                        </svg>
-                                    </td>
-                                    <td>张三</td>
-                                    <td class="text-navy"><i class="fa fa-level-up"></i> 40%</td>
+                                <tr v-for="item in filterLayerTableData" v-on:dblclick="zoomToFeature(item)">
+                                    <td>{{item.sourceCode}}</td>
+                                    <td>{{item.sourceName}}</td>
+                                    <td>{{item.sourceTypeBName}}</td>
                                 </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td><span class="line" style="display: none;">5,3,9,6,5,9,7,3,5,2</span>
-                                        <svg class="peity" height="16" width="32">
-                                            <polygon fill="#1ab394"
-                                                     points="0 15 0 7.166666666666666 3.5555555555555554 10.5 7.111111111111111 0.5 10.666666666666666 5.5 14.222222222222221 7.166666666666666 17.77777777777778 0.5 21.333333333333332 3.833333333333332 24.888888888888886 10.5 28.444444444444443 7.166666666666666 32 12.166666666666666 32 15"></polygon>
-                                            <polyline fill="transparent"
-                                                      points="0 7.166666666666666 3.5555555555555554 10.5 7.111111111111111 0.5 10.666666666666666 5.5 14.222222222222221 7.166666666666666 17.77777777777778 0.5 21.333333333333332 3.833333333333332 24.888888888888886 10.5 28.444444444444443 7.166666666666666 32 12.166666666666666"
-                                                      stroke="#169c81" stroke-width="1"
-                                                      stroke-linecap="square"></polyline>
-                                        </svg>
-                                    </td>
-                                    <td>李四</td>
-                                    <td class="text-warning"><i class="fa fa-level-down"></i> -20%</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td><span class="line" style="display: none;">1,6,3,9,5,9,5,3,9,6,4</span>
-                                        <svg class="peity" height="16" width="32">
-                                            <polygon fill="#1ab394"
-                                                     points="0 15 0 13.833333333333334 3.2 5.5 6.4 10.5 9.600000000000001 0.5 12.8 7.166666666666666 16 0.5 19.200000000000003 7.166666666666666 22.400000000000002 10.5 25.6 0.5 28.8 5.5 32 8.833333333333332 32 15"></polygon>
-                                            <polyline fill="transparent"
-                                                      points="0 13.833333333333334 3.2 5.5 6.4 10.5 9.600000000000001 0.5 12.8 7.166666666666666 16 0.5 19.200000000000003 7.166666666666666 22.400000000000002 10.5 25.6 0.5 28.8 5.5 32 8.833333333333332"
-                                                      stroke="#169c81" stroke-width="1"
-                                                      stroke-linecap="square"></polyline>
-                                        </svg>
-                                    </td>
-                                    <td>王麻子</td>
-                                    <td class="text-navy"><i class="fa fa-level-up"></i> 26%</td>
-                                </tr>
+
                                 </tbody>
                             </table>
                         </div>
@@ -175,20 +208,6 @@
     <script src="${ctxPath}/static/js/plugins/leaflet/leaflet.marker.highlight.js"></script>
     <script src="${ctxPath}/static/js/plugins/leaflet/leaflet-ruler.js"></script>
     <script>
-        Vue.component('button-counter', {
-            template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
-            data: function () {
-                return {
-                    counter: 0
-                }
-            },
-            methods: {
-                incrementTotal: function () {
-                    this.counter += 1
-                   alert(1);
-                }
-            },
-        })
 
         new Vue({
             el: '#container',
@@ -200,8 +219,10 @@
                 baseMapGroup: {mapNow: 'color', list: mapConfig.Layers.baseMapLayers},
                 layerList: [],
                 filterLayerId: 0,
+                filterLayerTableData: [],
                 map: null,
                 baseMap: null,
+                activeMarker: null,
                 rulerTool: {
                     polyline: {
                         ruler: null,
@@ -232,36 +253,13 @@
                 layerClickHandler: function (item) {
                     //判断图层是否未定义
                     if (item.layer == null) {
-                        item.layer = L.esri.dynamicMapLayer({
+                        item.layer = L.esri.featureLayer({
                             url: item.url
-                        }).bindPopup(function (err, featureCollection, response) {
-                            var html = `
-                                <div class='popupContainer'>
-                                    <div class='popupHeader'>
-                                        <ul class='nav nav-tabs'>
-                                            <li class='active'>
-                                                <a href='#TableContent' data-toggle='tab'>配套管线信息</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class='popupContent tab-content'>
-                                        <div class='popup-panel'>
-                                            <table>
-                                                <tr><th width="160">口门编号</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">口门名称</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">供水目标</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">岸别</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">渠道设计流量</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">渠道加大流量</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">口门流量</th><td>{source_name}</td></tr>
-                                                <tr><th width="160">分配水量</th><td>{source_name}</td></tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            `
-                            return L.Util.template(html, featureCollection.features[0].properties);
-                        })
+                        }).bindPopup(function (layer) {
+                            var html = item.template;
+                            return "text"
+//                            return L.Util.template(html, featureCollection.features[0].properties);
+                        }).bindTooltip("text", { sticky: true, direction: 'top',className: 'result-tooltip' });
                     }
                     //判断图层是否添加到map
                     if (item.isShow) {
@@ -299,8 +297,36 @@
                 },
                 //图层过滤
                 layerFilter: function (index) {
+                    var _this = this;
                     this.filterShow = true;
                     this.filterLayerId = index;
+                    var ajax = new $axGet(Feng.ctxPath + "/sourcebase/list", function (data) {
+                        _this.filterLayerTableData = data;
+                    }, function (data) {
+
+                    });
+                    ajax.start();
+
+                },
+                zoomToFeature: function (item) {
+                    var _this = this;
+
+                    this.layerList[this.filterLayerId].layer.query().layer(0).where("source_code='" + item.sourceCode + "'").run(function (error, featureCollection, response) {
+                        //缩放到要素
+                        _this.map.fitBounds(L.geoJSON(featureCollection).getBounds());
+                        //创建marker
+//                        var point = featureCollection.features[0].
+                        if (_this.activeMarker != null) {
+                            _this.activeMarker.removeFrom(_this.map);
+                            _this.activeMarker = null;
+                        }
+                        _this.activeMarker = L.marker(L.geoJSON(featureCollection).getBounds().getCenter(), {
+                            highlight: 'permanent'
+                        }).addTo(_this.map).on('click', function () {
+                            _this.activeMarker.removeFrom(_this.map);
+                            _this.activeMarker = null;
+                        });
+                    });
                 },
                 filterClose: function () {
                     this.filterShow = false;
@@ -354,15 +380,6 @@
 
                 this.baseMap = L.esri.tiledMapLayer({
                     url: "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer"
-                }).addTo(this.map);
-
-//                var layer = L.esri.dynamicMapLayer({
-//                    url: 'http://localhost:6080/arcgis/rest/services/luhunguanqu/water_resouce/MapServer'
-//                }).addTo(this.map);
-//                console.log(layer);
-
-                var marker1 = L.marker([34.168, 112.141]).on('click', function () {
-                    this.enablePermanentHighlight();
                 }).addTo(this.map);
 
                 //地图控件位置
